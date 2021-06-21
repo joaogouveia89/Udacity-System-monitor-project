@@ -17,11 +17,9 @@ using std::vector;
 Processor& System::Cpu() { return cpu_; }
 
 vector<Process>& System::Processes() {
-    if(processes_.empty()){
-        vector<int> pids = LinuxParser::Pids();
-        for(auto & pid : pids){
-            processes_.push_back(Process(pid));
-        }
+    vector<int> pids = LinuxParser::Pids();
+    for(auto & pid : pids){
+        processes_.push_back(Process(pid));
     }
     return processes_; 
 }
