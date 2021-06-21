@@ -120,7 +120,6 @@ string LinuxParser::Uid(int pid) {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
         if (key == "Uid") {
-          std::replace(value.begin(), value.end(), '_', ' ');
           return value;
         }
       }
