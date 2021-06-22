@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "linux_parser.h"
 
@@ -88,11 +89,41 @@ long LinuxParser::IdleJiffies() { return 0; }
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
-// TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return 0; }
+int LinuxParser::TotalProcesses() {
+   std::ifstream stream(kProcDirectory + kStatFilename);
+  string line;
+  if (stream.is_open()) {
+    string key;
+    string value;
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == "processes") {
+          return stoi(value);
+        }
+      }
+    }
+  }
+  return 0;
+}
 
-// TODO: Read and return the number of running processes
-int LinuxParser::RunningProcesses() { return 0; }
+int LinuxParser::RunningProcesses() {
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  string line;
+  if (stream.is_open()) {
+    string key;
+    string value;
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == "procs_running") {
+          return stoi(value);
+        }
+      }
+    }
+  }
+  return 0;
+}
 
 string LinuxParser::Command(int pid) {
   std::ifstream stream(kProcDirectory + to_string(pid) + kCmdlineFilename);
@@ -136,11 +167,13 @@ string LinuxParser::User(int pid) {
     string usernameUid;
     string username;
     string x;
-    std::replace(line.begin(), line.end(), ':', ' ');
-    std::istringstream linestream(line);
-    while (linestream >> username >> x >> usernameUid) {
-      if(usernameUid == uid){
-        return username;
+    while (std::getline(stream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      while (linestream >> username >> x >> usernameUid) {
+        if(usernameUid == uid){
+          return username;
+        }
       }
     }
   }
