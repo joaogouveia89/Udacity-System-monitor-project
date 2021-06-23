@@ -14,6 +14,7 @@ using std::vector;
 Process::Process(int pid) : pid_(pid){
     user_ = LinuxParser::User(pid);
     command_ = LinuxParser::Command(pid);
+    uptime_ = LinuxParser::UpTime(pid);
 }
 
 int Process::Pid() const{ return pid_; }
@@ -30,9 +31,9 @@ void Process::Ram(std::string ram) { ram_ = ram; }
 
 string Process::User() const{ return user_; }
 
-long int Process::UpTime() const{ return uptime_; }
+long Process::UpTime() const{ return uptime_; }
 
-void Process::UpTime(long int uptime){ uptime_ = uptime; }
+void Process::UpTime(long uptime){ uptime_ = uptime; }
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
