@@ -68,11 +68,41 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+
+float LinuxParser::MemoryUtilization() {
+  std::ifstream stream(kProcDirectory + kMeminfoFilename);
+  string line, key, value;
+  //TODO: Add logic to interrupt the file reading to avoid passing through all the lines
+  long long memTotal, memFree;
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if(key == "MemTotal"){
+          memTotal = strtoll(value.c_str(), nullptr, 10);
+        }
+        if(key == "MemFree"){
+          memFree = strtoll(value.c_str(), nullptr, 10);
+        }
+      }
+    }
+  }
+  return memFree /(float) memTotal; 
+}
 
 // TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long LinuxParser::UpTime() {
+  std::ifstream stream(kProcDirectory + kUptimeFilename);
+  string line;
+  long startTime = 0L;
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::vector<std::string> brokeLine = Helpers::split(line, ' ');
+    startTime =  stol(brokeLine[0]);
+  }
+  return startTime;
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
@@ -182,7 +212,7 @@ string LinuxParser::User(int pid) {
   return string();
 }
 
-long LinuxParser::UpTime(int pid) {
+long int LinuxParser::UpTime(int pid) {
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
   string line;
   long startTime = 0L;

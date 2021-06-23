@@ -31,9 +31,9 @@ void Process::Ram(std::string ram) { ram_ = ram; }
 
 string Process::User() const{ return user_; }
 
-long Process::UpTime() const{ return uptime_; }
+long int Process::UpTime() const{ return uptime_; }
 
-void Process::UpTime(long uptime){ uptime_ = uptime; }
+void Process::UpTime(long int uptime){ uptime_ = uptime; }
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function

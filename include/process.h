@@ -27,7 +27,7 @@ class Process {
     std::string command_;
     float cpuUtilization_{ 0.0 };
     std::string ram_{ "" };
-    long uptime_{ 0L };
+    long int uptime_{ 0L };
 };
 
 #endif
