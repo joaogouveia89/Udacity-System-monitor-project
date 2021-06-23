@@ -32,12 +32,8 @@ float System::MemoryUtilization() {return LinuxParser::MemoryUtilization(); }
 
 std::string System::OperatingSystem() { return LinuxParser::OperatingSystem(); }
 
-// TODO: Return the number of processes actively running on the system
 int System::RunningProcesses() { return LinuxParser::RunningProcesses(); }
 
 int System::TotalProcesses() { return LinuxParser::TotalProcesses(); }
 
-// TODO: Return the number of seconds since the system started running
-long System::UpTime() {
-     return LinuxParser::UpTime(); 
-}
+long System::UpTime() {return LinuxParser::UpTime(); }
