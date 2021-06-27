@@ -5,7 +5,6 @@
      user    nice   system  idle      iowait irq   softirq  steal  guest  guest_nice
 cpu  74608   2520   24433   1117073   6176   4054  0        0      0      0
 
-
 PrevIdle = previdle + previowait
 Idle = idle + iowait
 
@@ -16,7 +15,7 @@ PrevTotal = PrevIdle + PrevNonIdle
 Total = Idle + NonIdle
 
 # differentiate: actual value minus the previous one
-totald = Total - PrevTotal
+totald = Total - PrevTotal 
 idled = Idle - PrevIdle
 
 CPU_Percentage = (totald - idled)/totald
@@ -29,35 +28,26 @@ vector<string> Processor::parseData(){ return LinuxParser::CpuUtilization(); }
 float Processor::Utilization() {
     vector<string> data = parseData();
 
-    long user = std::stol(data[USER]);
-    long nice = std::stol(data[NICE]);
-    long system = std::stol(data[SYSTEM]);
-    long idle = std::stol(data[IDLE]);
-    long ioWait = std::stol(data[IO_WAIT]);
-    long irq = std::stol(data[IRQ]);
-    long softIrq = std::stol(data[SOFT_IRQ]);
-    long steal = std::stol(data[STEAL]);
+    unsigned long puser = std::strtoul(data[USER].c_str(), nullptr, 0);
+    unsigned long pnice = std::strtoul(data[NICE].c_str(), nullptr, 0);
+    unsigned long psystem = std::strtoul(data[SYSTEM].c_str(), nullptr, 0);
+    unsigned long pidle = std::strtoul(data[IDLE].c_str(), nullptr, 0);
+    unsigned long pioWait = std::strtoul(data[IO_WAIT].c_str(), nullptr, 0);
+    unsigned long pirq = std::strtoul(data[IRQ].c_str(), nullptr, 0);
+    unsigned long psoftIrq = std::strtoul(data[SOFT_IRQ].c_str(), nullptr, 0);
+    unsigned long psteal = std::strtoul(data[STEAL].c_str(), nullptr, 0);
 
-    prevIdle = prevIdle + prevIoWait;
-    idle = idle + ioWait;
+    unsigned long idle = pidle + pioWait;
+    unsigned long nonIdle = puser + pnice + psystem + pirq + psoftIrq + psteal;
 
-    long prevNonIdle = prevUser + prevNice + prevSystem + prevIrq + prevSoftIrq + prevSteal;
-    long nonIdle = user + nice + system + irq + softIrq + steal;
+    unsigned long prevTotal = prevIdle + prevNonIdle;
+    unsigned long total = idle + nonIdle;
 
-    long prevTotal = prevIdle + prevNonIdle;
-    long total = idle + nonIdle;
-
-    long totalD = total - prevTotal;
-    long idleD = idle - prevIdle;
+    unsigned long totalD = total - prevTotal;
+    unsigned long idleD = idle - prevIdle;
 
     prevIdle = idle;
-    prevIoWait = ioWait;
-    prevUser = user;
-    prevNice = nice;
-    prevSystem = system;
-    prevIrq = irq;
-    prevSoftIrq = prevSoftIrq;
-    prevSteal = steal;
+    prevNonIdle = nonIdle;
 
     return (totalD - idleD) /(float)totalD; 
 }

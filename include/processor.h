@@ -13,14 +13,8 @@ class Processor {
   float Utilization(); 
 
  private:
-    long prevIdle{ 0 };
-    long prevIoWait{ 0 };
-    long prevUser{ 0 };
-    long prevNice{ 0 };
-    long prevSystem{ 0 };
-    long prevIrq{ 0 };
-    long prevSoftIrq{ 0 };
-    long prevSteal{ 0 };
+    unsigned long prevIdle{ 0 };
+    unsigned long prevNonIdle{ 0 };
 
     // CPU
     enum CPUStates {
