@@ -26,7 +26,6 @@ CPU_Percentage = (totald - idled)/totald
 // Parse Data from linux system
 vector<string> Processor::parseData(){ return LinuxParser::CpuUtilization(); }
 
-// TODO: Return the aggregate CPU utilization
 float Processor::Utilization() {
     vector<string> data = parseData();
 
