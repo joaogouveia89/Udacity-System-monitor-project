@@ -18,11 +18,12 @@ using std::vector;
 Processor& System::Cpu() { return cpu_; }
 
 vector<Process>& System::Processes() {
-    vector<int> pids = LinuxParser::Pids();
+    vector<int> currentPids = LinuxParser::Pids();
     processes_.clear();
-    for(auto & pid : pids){
-        processes_.push_back(Process(pid));
+    for(auto & pid : currentPids){
+        processes_.push_back(Process(pid, UpTime()));
     }
+    std::sort(processes_.begin(), processes_.end());
     return processes_; 
 }
 

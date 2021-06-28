@@ -2,32 +2,47 @@
 #define PROCESS_H
 
 #include <string>
+#include <vector>
+
+using std::vector;
+using std::string;
 /*
 Basic class for Process representation
 It contains relevant attributes as shown below
 */
 class Process {
  public:
-  Process(int pid);
+  Process(int pid, long systemUptime);
 
   int Pid() const;
-  std::string User() const;
-  std::string Command() const;
-  float CpuUtilization() const;
-  void CpuUtilization(float cpuu);
-  std::string Ram() const;
-  void Ram(std::string ram);
+  string User() const;
+  string Command() const;
+  float CpuUtilization();
+  string Ram() const;
   long UpTime() const;
-  void UpTime(long uptime);
   bool operator<(Process const& a) const;
+
+  void updateProcessInformation(long systemUptime);
 
  private:
     const int pid_;
-    std::string user_;
-    std::string command_;
+    string user_;
+    string command_;
     float cpuUtilization_{ 0.0 };
-    std::string ram_{ "" };
+    string ram_{ "" };
     long int uptime_{ 0L };
+
+    vector<string> parseCpuUtilization();
+
+    float computeProcessCpuUtilization(long systemUptime);
+
+    //parsed array positions
+
+    const static int U_TIME = 13;
+    const static int S_TIME = 14;
+    const static int CU_TIME = 15;
+    const static int CS_TIME = 16;
+    const static int START_TIME = 21;
 };
 
 #endif

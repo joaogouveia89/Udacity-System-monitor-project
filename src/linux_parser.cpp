@@ -91,7 +91,6 @@ float LinuxParser::MemoryUtilization() {
   return memFree /(float) memTotal; 
 }
 
-// TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   string line;
@@ -109,7 +108,6 @@ long LinuxParser::UpTime() {
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
 
-// TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
   std::ifstream stream(kProcDirectory + kStatFilename);
   string line;
@@ -222,5 +220,15 @@ long int LinuxParser::UpTime(int pid) {
     startTime =  stol(brokeLine[21]);
   }
   return startTime / sysconf(_SC_CLK_TCK);
+}
+
+vector<string> LinuxParser::parseCpuUtilization(int pid){
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
+  string line;
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    return Helpers::split(line, ' ');
+  }
+  return {}; 
 }
  
