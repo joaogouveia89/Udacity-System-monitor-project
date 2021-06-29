@@ -29,8 +29,6 @@ std::string Kernel();
 
 std::vector<std::string> CpuUtilization();
 
-long ActiveJiffies(int pid);
-
 // Processes
 std::string Command(int pid);
 std::string Ram(int pid);
