@@ -88,7 +88,7 @@ float LinuxParser::MemoryUtilization() {
       }
     }
   }
-  return memFree /(float) memTotal; 
+  return (memTotal - memFree) / (float)memTotal; 
 }
 
 long LinuxParser::UpTime() {
@@ -158,6 +158,7 @@ string LinuxParser::Command(int pid) {
   }
   return string();
 }
+
 
 string LinuxParser::Ram(int pid) {
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatusFilename);
