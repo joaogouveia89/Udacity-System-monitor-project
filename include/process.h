@@ -17,7 +17,7 @@ class Process {
   int Pid() const;
   string User() const;
   string Command() const;
-  float CpuUtilization();
+  float CpuUtilization() const;
   string Ram() const;
   long UpTime() const;
   bool operator<(Process const& a) const;
@@ -25,7 +25,7 @@ class Process {
   void updateProcessInformation(long systemUptime);
 
  private:
-    const int pid_;
+    int pid_;
     string user_;
     string command_;
     float cpuUtilization_{ 0.0 };

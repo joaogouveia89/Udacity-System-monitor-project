@@ -37,14 +37,14 @@ float Process::computeProcessCpuUtilization(long systemUptime){
     unsigned long totalTime = uTime + sTime + cuTime + csTime;
     unsigned long seconds = systemUptime - (startTime / Hertz);
 
-    return 100 * ((totalTime /(float) Hertz) /(float) seconds);
+    return ((totalTime /(float) Hertz) /(float) seconds);
 }
 
 vector<string> Process::parseCpuUtilization(){ return LinuxParser::parseCpuUtilization(pid_); }
 
 int Process::Pid() const{ return pid_; }
 
-float Process::CpuUtilization(){ return cpuUtilization_; }
+float Process::CpuUtilization() const{ return cpuUtilization_; }
 
 string Process::Command() const{ return command_; }
 
