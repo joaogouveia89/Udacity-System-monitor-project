@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "process.h"
+#include "helpers.h"
 #include "linux_parser.h"
 
 using std::string;
@@ -16,6 +17,9 @@ Process::Process(int pid, long systemUptime) : pid_(pid){
     command_ = LinuxParser::Command(pid);
     uptime_ = LinuxParser::UpTime(pid);
     cpuUtilization_ = computeProcessCpuUtilization(systemUptime);
+    
+    unsigned long parsedRam = std::strtoul(LinuxParser::Ram(pid).c_str(), nullptr, 0);
+    ram_ = Helpers::kbToMb(parsedRam);
 }
 
 void Process::updateProcessInformation(long systemUptime){
