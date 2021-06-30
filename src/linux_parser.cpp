@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include "helpers.h"
+#include <filesystem>
 
 #include "linux_parser.h"
 
@@ -12,7 +13,8 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-// DONE: An example of how to read data from the filesystem
+namespace fs = std::filesystem;
+
 string LinuxParser::OperatingSystem() {
   string line;
   string key;
@@ -35,7 +37,6 @@ string LinuxParser::OperatingSystem() {
   return value;
 }
 
-// DONE: An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
   string os, version, kernel;
   string line;
@@ -48,23 +49,19 @@ string LinuxParser::Kernel() {
   return kernel;
 }
 
-// BONUS: Update this to use std::filesystem
+// reference: https://en.cppreference.com/w/cpp/filesystem
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
-  DIR* directory = opendir(kProcDirectory.c_str());
-  struct dirent* file;
-  while ((file = readdir(directory)) != nullptr) {
-    // Is this a directory?
-    if (file->d_type == DT_DIR) {
-      // Is every character of the name a digit?
-      string filename(file->d_name);
+  for(auto& it : fs::directory_iterator(kProcDirectory)){
+    auto itemStatus = fs::status(it);
+    if(it.is_directory()){
+      std::string filename = Helpers::split(it.path(), '/').back();
       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
         int pid = stoi(filename);
         pids.push_back(pid);
       }
     }
   }
-  closedir(directory);
   return pids;
 }
 
