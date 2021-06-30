@@ -27,11 +27,11 @@ vector<Process>& System::Processes() {
     return processes_; 
 }
 
-std::string System::Kernel() { return LinuxParser::Kernel(); }
+std::string System::Kernel() { return kernel.empty() ? kernel = LinuxParser::Kernel() : kernel; }
 
 float System::MemoryUtilization() {return LinuxParser::MemoryUtilization(); }
 
-std::string System::OperatingSystem() { return LinuxParser::OperatingSystem(); }
+std::string System::OperatingSystem() { return operatingSystem.empty() ? operatingSystem = LinuxParser::OperatingSystem() : operatingSystem; }
 
 int System::RunningProcesses() { return LinuxParser::RunningProcesses(); }
 
