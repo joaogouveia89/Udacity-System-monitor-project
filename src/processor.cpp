@@ -22,11 +22,12 @@ CPU_Percentage = (totald - idled)/totald
 
 */
 
-// Parse Data from linux system
-vector<string> Processor::parseData(){ return LinuxParser::CpuUtilization(); }
-
 float Processor::Utilization() {
-    vector<string> data = parseData();
+    return utilization_;
+}
+
+void Processor::Utilization(string strData){
+    vector<string> data = Helpers::split(strData, ' ');
 
     unsigned long puser = std::strtoul(data[USER].c_str(), nullptr, 0);
     unsigned long pnice = std::strtoul(data[NICE].c_str(), nullptr, 0);
@@ -49,5 +50,5 @@ float Processor::Utilization() {
     prevIdle = idle;
     prevNonIdle = nonIdle;
 
-    return (totalD - idleD) /(float)totalD; 
+    utilization_ = (totalD - idleD) /(float)totalD;
 }

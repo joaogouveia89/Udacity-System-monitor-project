@@ -4,22 +4,19 @@
 #include <vector>
 #include <iostream>
 #include "helpers.h"
-#include <filesystem>
 
-#include "linux_parser.h"
+#include "linux_parser_unmutable.h"
 
 using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
 
-namespace fs = std::filesystem;
-
-string LinuxParser::OperatingSystem() {
+string LinuxParserUnmutable::OperatingSystem() {
   string line;
   string key;
   string value;
-  std::ifstream filestream(kOSPath);
+  std::ifstream filestream(Paths::kOSPath);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::replace(line.begin(), line.end(), ' ', '_');
@@ -37,10 +34,10 @@ string LinuxParser::OperatingSystem() {
   return value;
 }
 
-string LinuxParser::Kernel() {
+string LinuxParserUnmutable::Kernel() {
   string os, version, kernel;
   string line;
-  std::ifstream stream(kProcDirectory + kVersionFilename);
+  std::ifstream stream(Paths::kProcDirectory + Paths::kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
@@ -49,102 +46,6 @@ string LinuxParser::Kernel() {
   return kernel;
 }
 
-// reference: https://en.cppreference.com/w/cpp/filesystem
-vector<int> LinuxParser::Pids() {
-  vector<int> pids;
-  for(auto& it : fs::directory_iterator(kProcDirectory)){
-    auto itemStatus = fs::status(it);
-    if(it.is_directory()){
-      std::string filename = Helpers::split(it.path(), '/').back();
-      if (std::all_of(filename.begin(), filename.end(), isdigit)) {
-        int pid = stoi(filename);
-        pids.push_back(pid);
-      }
-    }
-  }
-  return pids;
-}
-
-
-float LinuxParser::MemoryUtilization() {
-  std::ifstream stream(kProcDirectory + kMeminfoFilename);
-  string line, key, value;
-  //TODO: Add logic to interrupt the file reading to avoid passing through all the lines
-  long long memTotal, memFree;
-  if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::replace(line.begin(), line.end(), ':', ' ');
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if(key == "MemTotal"){
-          memTotal = strtoll(value.c_str(), nullptr, 10);
-        }
-        if(key == "MemFree"){
-          memFree = strtoll(value.c_str(), nullptr, 10);
-        }
-      }
-    }
-  }
-  return (memTotal - memFree) / (float)memTotal; 
-}
-
-long LinuxParser::UpTime() {
-  std::ifstream stream(kProcDirectory + kUptimeFilename);
-  string line;
-  long startTime = 0L;
-  if (stream.is_open()) {
-    std::getline(stream, line);
-    std::vector<std::string> brokeLine = Helpers::split(line, ' ');
-    startTime =  stol(brokeLine[0]);
-  }
-  return startTime;
-}
-
-vector<string> LinuxParser::CpuUtilization() {
-  std::ifstream stream(kProcDirectory + kStatFilename);
-  string line;
-  if (stream.is_open()) {
-    std::getline(stream, line);
-    return Helpers::split(line, ' ');
-  }
-  return {}; 
-}
-
-int LinuxParser::TotalProcesses() {
-   std::ifstream stream(kProcDirectory + kStatFilename);
-  string line;
-  if (stream.is_open()) {
-    string key;
-    string value;
-    while (std::getline(stream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "processes") {
-          return stoi(value);
-        }
-      }
-    }
-  }
-  return 0;
-}
-
-int LinuxParser::RunningProcesses() {
-  std::ifstream stream(kProcDirectory + kStatFilename);
-  string line;
-  if (stream.is_open()) {
-    string key;
-    string value;
-    while (std::getline(stream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "procs_running") {
-          return stoi(value);
-        }
-      }
-    }
-  }
-  return 0;
-}
 
 string LinuxParser::Command(int pid) {
   std::ifstream stream(kProcDirectory + to_string(pid) + kCmdlineFilename);

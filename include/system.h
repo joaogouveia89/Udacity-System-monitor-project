@@ -6,8 +6,9 @@
 
 #include "process.h"
 #include "processor.h"
+#include "linux_parser_mutable.h"
 
-class System {
+class System : public LinuxParserMutable{
  public:
   Processor& Cpu();
   std::vector<Process>& Processes();
@@ -23,6 +24,15 @@ class System {
   std::string kernel { "" };
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
+
+  float memoryUtilization_{ 0.0 };
+  int runningProcesses_ { 0 };
+  int totalProcesses_{ 0 };
+  long uptTime_{ 0 };
+
+  float calculateMemoryUtilization();
+
+  void onFetchFinished() override;
 };
 
 #endif
