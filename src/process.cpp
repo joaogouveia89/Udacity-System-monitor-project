@@ -6,58 +6,54 @@
 
 #include "process.h"
 #include "helpers.h"
-#include "linux_parser.h"
 
 using std::string;
 using std::to_string;
 using std::vector;
 
 Process::Process(int pid, long systemUptime) : pid_(pid){
-    user_ = LinuxParser::User(pid);
-    command_ = LinuxParser::Command(pid);
-    uptime_ = LinuxParser::UpTime(pid);
-    cpuUtilization_ = computeProcessCpuUtilization(systemUptime);
-    
-    unsigned long parsedRam = std::strtoul(LinuxParser::Ram(pid).c_str(), nullptr, 0);
-    ram_ = Helpers::kbToMb(parsedRam);
+    fetchProcessData(pid);
+    this->systemUpTime = systemUptime;
 }
 
-void Process::updateProcessInformation(long systemUptime){
-    uptime_ = LinuxParser::UpTime(pid_);
-    cpuUtilization_ = computeProcessCpuUtilization(systemUptime);
-}
-
-float Process::computeProcessCpuUtilization(long systemUptime){
-    vector<string> data = parseCpuUtilization();
+void Process::computeProcessCpuUtilization(long systemUptime){
 
     long Hertz = sysconf(_SC_CLK_TCK);
 
-    unsigned long uTime = std::strtoul(data[U_TIME].c_str(), nullptr, 0);
-    unsigned long sTime = std::strtoul(data[S_TIME].c_str(), nullptr, 0);
-    unsigned long cuTime = std::strtoul(data[CU_TIME].c_str(), nullptr, 0);
-    unsigned long csTime = std::strtoul(data[CS_TIME].c_str(), nullptr, 0);
-    unsigned long startTime = std::strtoul(data[START_TIME].c_str(), nullptr, 0);
+    unsigned long uTime = std::strtoul(Data(Identifiers::PROCESS_U_TIME).c_str(), nullptr, 0);
+    unsigned long sTime = std::strtoul(Data(Identifiers::PROCESS_S_TIME).c_str(), nullptr, 0);
+    unsigned long cuTime = std::strtoul(Data(Identifiers::PROCESS_CU_TIME).c_str(), nullptr, 0);
+    unsigned long csTime = std::strtoul(Data(Identifiers::PROCESS_CS_TIME).c_str(), nullptr, 0);
+    unsigned long startTime = std::strtoul(Data(Identifiers::PROCESS_START_TIME).c_str(), nullptr, 0);
 
     unsigned long totalTime = uTime + sTime + cuTime + csTime;
     unsigned long seconds = systemUptime - (startTime / Hertz);
 
-    return (totalTime /(float) Hertz) /(float) seconds;
+    cpuUtilization_= (totalTime /(float) Hertz) /(float) seconds;
 }
-
-vector<string> Process::parseCpuUtilization(){ return LinuxParser::parseCpuUtilization(pid_); }
 
 int Process::Pid() const{ return pid_; }
 
 float Process::CpuUtilization() const{ return cpuUtilization_; }
 
-string Process::Command() const{ return command_; }
+string Process::Command() const{ return Data(Identifiers::PROCESS_COMMAND); }
 
-string Process::Ram() const{ return ram_; }
+string Process::Ram() const{
+    unsigned long ramKb = std::strtoul(Data(Identifiers::PROCESS_RAM).c_str(), nullptr, 0);
+    return Helpers::kbToMb(ramKb);
+}
 
-string Process::User() const{ return user_; }
+string Process::User() const{ return Data(Identifiers::PROCESS_USERNAME); }
 
-long int Process::UpTime() const{ return uptime_; }
+long int Process::UpTime() const{
+    long startTime = stol(Data(Identifiers::PROCESS_START_TIME));
+    return startTime / sysconf(_SC_CLK_TCK);
+}
 
 bool Process::operator<(Process const& a) const {
      return this->CpuUtilization() < a.CpuUtilization(); 
+}
+
+void Process::onFetchFinished(){
+    computeProcessCpuUtilization(systemUpTime);
 }

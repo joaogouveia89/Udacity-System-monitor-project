@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include "linux_parser_mutable.h"
+#include "identifiers.h"
 
 using std::vector;
 using std::string;
@@ -10,7 +12,7 @@ using std::string;
 Basic class for Process representation
 It contains relevant attributes as shown below
 */
-class Process {
+class Process : public LinuxParserMutable{
  public:
   Process(int pid, long systemUptime);
 
@@ -24,25 +26,16 @@ class Process {
 
   void updateProcessInformation(long systemUptime);
 
+  void onFetchFinished() override;
+
  private:
     int pid_;
-    string user_;
-    string command_;
     float cpuUtilization_{ 0.0 };
-    string ram_{ "" };
-    long int uptime_{ 0L };
+    long systemUpTime { 0 };
 
     vector<string> parseCpuUtilization();
 
-    float computeProcessCpuUtilization(long systemUptime);
-
-    //parsed array positions
-
-    const static int U_TIME = 13;
-    const static int S_TIME = 14;
-    const static int CU_TIME = 15;
-    const static int CS_TIME = 16;
-    const static int START_TIME = 21;
+    void computeProcessCpuUtilization(long systemUptime);
 };
 
 #endif
