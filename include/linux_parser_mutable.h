@@ -39,6 +39,7 @@ public:
     std::vector<int> Pids();
     void fetchSystemData();
     void fetchProcessData(int pid);
+    void ClearData();
     virtual void onFetchFinished() = 0;
 
     string Data(string key) const;

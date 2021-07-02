@@ -12,8 +12,8 @@ using std::to_string;
 using std::vector;
 
 Process::Process(int pid, long systemUptime) : pid_(pid){
-    fetchProcessData(pid);
     this->systemUpTime = systemUptime;
+    fetchProcessData(pid);
 }
 
 void Process::computeProcessCpuUtilization(long systemUptime){

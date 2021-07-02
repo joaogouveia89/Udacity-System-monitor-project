@@ -24,8 +24,6 @@ class Process : public LinuxParserMutable{
   long UpTime() const;
   bool operator<(Process const& a) const;
 
-  void updateProcessInformation(long systemUptime);
-
   void onFetchFinished() override;
 
  private:

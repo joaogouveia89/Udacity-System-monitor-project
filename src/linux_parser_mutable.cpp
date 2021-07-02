@@ -3,7 +3,12 @@
 LinuxParserMutable::LinuxParserMutable(){}
 
 string LinuxParserMutable::Data(string key) const{
+  if(data_.find(key) == data_.end()) return ""; // workaround to avoid out of range crashes on map object. Should be removed on the future when the crash reason is found
   return data_.at(key);
+}
+
+void LinuxParserMutable::ClearData(){
+  data_.clear();
 }
 
 void LinuxParserMutable::fetchSystemData(){
@@ -116,7 +121,7 @@ void LinuxParserMutable::ProcessStatus(int pid) {
   if (stream.is_open()) {
     string key;
     string value;
-    while (std::getline(stream, line) && !hasProcessUid && !hasProcessRam) {
+    while (std::getline(stream, line) || (!hasProcessUid && !hasProcessRam)) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
@@ -137,7 +142,6 @@ void LinuxParserMutable::ProcessStatus(int pid) {
 void LinuxParserMutable::ProcessStat(int pid){
     std::ifstream stream(Paths::kProcDirectory + to_string(pid) + Paths::kStatFilename);
     string line;
-    std::getline(stream, line);
     if (stream.is_open()) {
         std::getline(stream, line);
         vector<string> stats = Helpers::split(line, ' ');
