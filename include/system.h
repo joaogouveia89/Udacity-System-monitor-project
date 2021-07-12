@@ -25,6 +25,7 @@ class System : public LinuxParserMutable{
   std::string kernel { "" };
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
+  float kernelVersion;
 
   float memoryUtilization_{ 0.0 };
   int runningProcesses_ { 0 };
@@ -32,6 +33,8 @@ class System : public LinuxParserMutable{
   long uptTime_{ 0 };
 
   float calculateMemoryUtilization();
+  
+  void getKernelVersion();
 
   void onFetchFinished() override;
 };

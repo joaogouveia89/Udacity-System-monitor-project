@@ -7,9 +7,9 @@ const std::vector<std::string> Helpers::split(const std::string& s, const char& 
     for(auto n:s)
     {
         if(n != separator) buff+=n; else
-        if(n == separator && buff != "") { v.push_back(buff); buff = ""; }
+        if(n == separator && buff != "") { v.emplace_back(buff); buff = ""; }
     }
-    if(buff != "") v.push_back(buff);
+    if(buff != "") v.emplace_back(buff);
     
     return v;
 }

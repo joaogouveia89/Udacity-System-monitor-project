@@ -23,14 +23,25 @@ vector<Process>& System::Processes() {
     vector<int> currentPids = Pids();
     processes_.clear();
     for(auto & pid : currentPids){
-        processes_.push_back(Process(pid, UpTime()));
+        processes_.push_back(Process(pid, UpTime(), kernelVersion));
     }
     std::sort(processes_.begin(), processes_.end());
     std::reverse(processes_.begin(),processes_.end());
     return processes_; 
 }
 
-std::string System::Kernel() { return kernel.empty() ? kernel = LinuxParserUnmutable::Kernel() : kernel; }
+void System::getKernelVersion(){
+    vector<string> spplited = Helpers::split(kernel, '.');
+    kernelVersion = stoi(spplited[0]) + stoi(spplited[1]) / static_cast<float>(10);
+}
+
+std::string System::Kernel() { 
+    if(kernel.empty()){
+        kernel = LinuxParserUnmutable::Kernel();
+        getKernelVersion();
+    }
+    return kernel; 
+}
 
 float System::MemoryUtilization() {return memoryUtilization_; }
 

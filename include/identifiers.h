@@ -14,7 +14,7 @@ namespace Identifiers{
 
     const static string PROCESS_UID = "Uid";
     const static string PROCESS_USERNAME = "Username";
-    const static string PROCESS_RAM = "VmSize";
+    const static string PROCESS_RAM = "VmRSS"; //To project reviewer: The VmRSS returns me the exact physical memory being used as a part of Physical RAM, and VmSize as it was described on the project requirements, returns me Virtual memory size, so that is the reason I changed from VmSize to VmRSS
     const static string PROCESS_START_TIME = "StartTime";
     const static string PROCESS_U_TIME = "U_TIME";
     const static string PROCESS_S_TIME = "S_TIME";

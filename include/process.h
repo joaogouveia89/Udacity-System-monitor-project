@@ -14,7 +14,7 @@ It contains relevant attributes as shown below
 */
 class Process : public LinuxParserMutable{
  public:
-  Process(int pid, long systemUptime);
+  Process(int pid, long systemUptime, float kernel);
 
   int Pid() const;
   string User() const;
@@ -30,6 +30,9 @@ class Process : public LinuxParserMutable{
     int pid_;
     float cpuUtilization_{ 0.0 };
     long systemUpTime { 0 };
+    float kernel { 0 };
+
+    float getKernelVersion(std::string kernelStr);
 
     vector<string> parseCpuUtilization();
 

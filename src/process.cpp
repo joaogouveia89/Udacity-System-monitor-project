@@ -11,8 +11,9 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid, long systemUptime) : pid_(pid){
+Process::Process(int pid, long systemUptime, float kernel) : pid_(pid){
     this->systemUpTime = systemUptime;
+    this->kernel = kernel;
     fetchProcessData(pid);
 }
 
@@ -29,7 +30,7 @@ void Process::computeProcessCpuUtilization(long systemUptime){
     unsigned long totalTime = uTime + sTime + cuTime + csTime;
     unsigned long seconds = systemUptime - (startTime / Hertz);
 
-    cpuUtilization_= (totalTime /(float) Hertz) /(float) seconds;
+    cpuUtilization_= (totalTime /static_cast<float>(Hertz)) /(static_cast<float>(seconds));
 }
 
 int Process::Pid() const{ return pid_; }
@@ -47,7 +48,10 @@ string Process::User() const{ return Data(Identifiers::PROCESS_USERNAME); }
 
 long int Process::UpTime() const{
     long startTime = stol(Data(Identifiers::PROCESS_START_TIME));
-    return startTime / sysconf(_SC_CLK_TCK);
+    if(kernel >= 2.6){
+        startTime /= sysconf(_SC_CLK_TCK);
+    }
+    return this->systemUpTime - startTime;
 }
 
 bool Process::operator<(Process const& a) const {
